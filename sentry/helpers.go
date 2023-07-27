@@ -2,11 +2,10 @@ package sentry
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
-
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/jianyuan/go-sentry/v2/sentry"
 )
@@ -76,7 +75,11 @@ func followShape(shape, value interface{}) interface{} {
 
 		v := make([]interface{}, 0, len(shape))
 		for i, shapeValue := range shape {
-			v = append(v, followShape(shapeValue, value[i]))
+			if i < len(value) {
+				v = append(v, followShape(shapeValue, value[i]))
+			} else {
+				fmt.Println("Warning: i is out of range. Skipping the operation.")
+			}
 		}
 		return v
 	default:

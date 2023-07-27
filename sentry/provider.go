@@ -5,6 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"fmt"
 )
 
 func init() {
@@ -70,9 +71,16 @@ func NewProvider(version string) func() *schema.Provider {
 
 func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		token, ok := d.Get("token").(string)
+		if !ok {
+			// Handle the case where the value is not a string or is nil
+			// You can return an error, set a default value, or take appropriate action
+			// For example:
+			return "", diag.FromErr(fmt.Errorf("token is not a string"))
+		}	
 		config := Config{
 			UserAgent: p.UserAgent("terraform-provider-sentry", version),
-			Token:     d.Get("token").(string),
+			Token:     token,
 			BaseURL:   d.Get("base_url").(string),
 		}
 		return config.Client(ctx)

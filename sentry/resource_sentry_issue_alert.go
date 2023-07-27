@@ -121,7 +121,11 @@ func resourceSentryIssueAlertSchema() map[string]*schema.Schema {
 			Type:        schema.TypeString,
 			Computed:    true,
 		},
-	}
+		"owner": {
+			Type:     schema.TypeString,
+			Computed: true,
+		},
+}
 }
 
 func resourceSentryIssueAlertResourceV0() *schema.Resource {
@@ -175,6 +179,10 @@ func resourceSentryIssueAlertObject(d *schema.ResourceData) *sentry.IssueAlert {
 
 	if v, ok := d.GetOk("project"); ok {
 		alert.Projects = []string{v.(string)}
+	}
+
+	if v, ok := d.GetOk("owner"); ok {
+		alert.Owner = sentry.String(v.(string))
 	}
 
 	return alert
@@ -239,6 +247,7 @@ func resourceSentryIssueAlertRead(ctx context.Context, d *schema.ResourceData, m
 		d.Set("frequency", alert.Frequency),
 		d.Set("environment", alert.Environment),
 		d.Set("internal_id", alert.ID),
+		// d.set("owner", alert.Owner),
 	)
 	if len(alert.Projects) == 1 {
 		retErr = multierror.Append(

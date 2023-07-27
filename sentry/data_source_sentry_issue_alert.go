@@ -83,6 +83,10 @@ func dataSourceSentryIssueAlertSentryIssueAlert() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
+			"owner": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
